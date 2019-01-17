@@ -1,0 +1,112 @@
+package ua.hillel.pashchenko;
+
+import java.io.*;
+import java.util.List;
+
+public class IOMain {
+
+
+    public static void main(String[] args) throws IOException {
+        objectStream();
+    }
+
+    public static void objectStream() throws IOException{
+
+
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("object.dat") );
+        byte width=12;
+        Object obj = new TeslaCar(1, List.of(new Weel(15,width,"Nokian")));
+
+        objectOutputStream.writeObject(obj);
+        objectOutputStream.flush();
+        objectOutputStream.close();
+
+
+
+        System.out.println();
+
+    }
+
+    static class Car implements Serializable {
+        static long serialVersionUID = 57631562110954875L;
+        public static String ss;
+        public int id;
+        List<Weel> weels;
+        String name;
+
+        public Car() {
+        }
+
+        public Car(int id, List<Weel> weels) {
+            this.id = id;
+            this.weels = weels;
+        }
+
+        @Override
+        public String toString() {
+            return "Car{" +
+                    "id=" + id +
+                    ", weel=" + weels +
+                    '}';
+        }
+    }
+
+    static class TeslaCar extends Car implements Serializable {
+        public TeslaCar(int id, List<Weel> weels) {
+            super(id, weels);
+        }
+
+        @Override
+        public String toString() {
+            return "TeslaCar{" +
+                    "id=" + id +
+                    ", weels=" + weels +
+                    ", name='" + name + '\'' +
+                    '}';
+        }
+    }
+
+    static class Weel implements Externalizable {
+        static long serialVersionUID = 57631562110954335L;
+        int radus;
+        byte width;
+        String vendor;
+
+        public Weel() {
+        }
+
+        public Weel(int radus, byte width, String vendor) {
+            this.radus = radus;
+            this.width = width;
+            this.vendor = vendor;
+        }
+
+        @Override
+        public String toString() {
+            return "Weel{" +
+                    "radus=" + radus +
+                    ", width=" + width +
+                    ", vendor='" + vendor + '\'' +
+                    '}';
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            out.writeInt(radus);
+            out.writeByte(width);
+            out.writeUTF(vendor);
+            out.flush();
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            radus = in.readInt();
+            width = in.readByte();
+            vendor = in.readUTF();
+        }
+    }
+
+
+
+
+}
