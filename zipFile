@@ -1,0 +1,53 @@
+package ua.hillel.pashchenko;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+public class IOMain {
+    public static void main(String[] args) throws IOException {
+
+        zipStream();
+
+
+    }
+
+    public static void zipStream() throws IOException {
+        String fileName = "/home/hillel/A_Pashchenko/IOStreams/src/ua/hillel/pashchenko/textfile.txt";
+        String zipName = "/home/hillel/A_Pashchenko/IOStreams/src/ua/hillel/pashchenko/textfile.zip";
+
+        //write
+        try {
+            ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(zipName));
+            FileInputStream fis = new FileInputStream(fileName);
+            ZipEntry entry = new ZipEntry("test.txt");
+            zout.putNextEntry(entry);
+            byte[] buffer = new byte[fis.available()];
+            fis.read(buffer);
+            zout.write(buffer);
+            zout.closeEntry();
+            zout.close();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        //read
+        long MILLS_IN_DAY = 24 * 60 * 60 * 1000;
+        try (FileInputStream fis = new FileInputStream(zipName);
+             BufferedInputStream bis = new BufferedInputStream(fis);
+             ZipInputStream zis = new ZipInputStream(bis)) {
+
+            ZipEntry ze;
+
+            while ((ze = zis.getNextEntry()) != null) {
+                System.out.format("File: %s Size: %d Last Modified %s", ze.getName(), ze.getSize(),
+                        LocalDate.ofEpochDay(ze.getTime() / MILLS_IN_DAY));
+            }
+        }
+    }
+}
